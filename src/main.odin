@@ -10,6 +10,7 @@ import "core:fmt"
 import "core:strings"
 
 import ray "raylib"
+import gra "core/graphics"
 import bat "core/battle"
 import mon "core/monsters"
 import ply "core/player"
@@ -37,17 +38,9 @@ main :: proc() {
 				ray.clear_background(ray.RAYWHITE);
 
 				ray.begin_mode2d(ply.player.camera);
-					image:   ray.Image   = ray.gen_image_color(64,64,ray.BLACK);
-					texture: ray.Texture = ray.load_texture_from_image(image);
 					
-					if bat.battle.isActive {
-						for i:=0; i < len(bat.battle.monsters); i+=1 {
-							ray.draw_texture(texture, i32(16+(i*72)),32, ray.WHITE);
-						}
-					}
+					bat.render_battle();
 
-					ray.unload_image(image);
-					ray.unload_texture(texture);
 				ray.end_mode2d();
 			ray.end_drawing();
 		}

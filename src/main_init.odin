@@ -10,6 +10,7 @@ package main
 //import "core:strings"
 
 import ray "raylib"
+import gra "core/graphics"
 import bat "core/battle"
 import ply "core/player"
 
@@ -23,6 +24,8 @@ main_init :: proc() {
 	ray.set_exit_key(ray.Keyboard_Key.KEY_END);
 
 	// Game initialization
+	gra.init();
 	ply.init();
 	bat.init();
+
 }
