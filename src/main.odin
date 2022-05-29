@@ -11,6 +11,7 @@ import "core:strings"
 
 import ray "raylib"
 import gra "core/graphics"
+import txt "core/textbox"
 import bat "core/battle"
 import mon "core/monsters"
 import ply "core/player"
@@ -40,6 +41,8 @@ main :: proc() {
 				ray.begin_mode2d(ply.player.camera);
 					
 					bat.render_battle();
+
+					ray.draw_fps((8 * 3), (8 * 5));
 
 				ray.end_mode2d();
 			ray.end_drawing();

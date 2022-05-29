@@ -1,0 +1,5 @@
+Textbox functionality
+ - Menu box
+	- function_call(location: Vector2, options: [dynamic]TextboxOptions, flags: u8)
+ - Talking box
+	- function_call(location: Vector2, text:    [dynamic]string,         flags: u8)

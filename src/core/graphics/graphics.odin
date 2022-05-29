@@ -1,7 +1,7 @@
 package graphics
 ///=-------------------=///
 //  Written: 2022/05/23  //
-//  Edited:  2022/05/23  //
+//  Edited:  2022/05/28  //
 ///=-------------------=///
 
 
@@ -28,6 +28,7 @@ graphics: ^Graphics;
 Graphics :: struct {
 	monsterFrontTextures: [MonsterTextures.SIZE]ray.Texture,
 	monsterBackTextures:  [MonsterTextures.SIZE]ray.Texture,
+	timelineTexture:      ray.Texture,
 	textboxTexture:       ray.Texture,
 	textboxNPatch:        ray.N_Patch_Info,
 };
@@ -69,18 +70,26 @@ init :: proc() {
 		delete(cstr);
 	}
 
+	img: ray.Image;
+
+	// Timeline
+	img = ray.load_image("data/battle/timeline.png");
+	ray.image_resize_nn(&img, img.width * IMAGE_IMPORT_MULTIPLIER, img.height * IMAGE_IMPORT_MULTIPLIER);
+	graphics.timelineTexture = ray.load_texture_from_image(img);
+	ray.unload_image(img);
+
 	// Textbox
 	//Texture
-	img: ray.Image = ray.load_image("data/battle/textbox.png");
+	img = ray.load_image("data/battle/textbox.png");
 	ray.image_resize_nn(&img, img.width * IMAGE_IMPORT_MULTIPLIER, img.height * IMAGE_IMPORT_MULTIPLIER);
 	graphics.textboxTexture = ray.load_texture_from_image(img);
 	ray.unload_image(img);
 	//NPatch
 	graphics.textboxNPatch = {};
-	graphics.textboxNPatch.source = ray.Rectangle{0,0,96,96};
-	graphics.textboxNPatch.left   = 32;
-	graphics.textboxNPatch.top    = 32;
-	graphics.textboxNPatch.right  = 32;
-	graphics.textboxNPatch.bottom = 32;
+	graphics.textboxNPatch.source = ray.Rectangle{0,0,192,192};
+	graphics.textboxNPatch.left   = 64;
+	graphics.textboxNPatch.top    = 64;
+	graphics.textboxNPatch.right  = 64;
+	graphics.textboxNPatch.bottom = 64;
 	graphics.textboxNPatch.layout = i32(ray.N_Patch_Layout.NPATCH_NINE_PATCH);
 }

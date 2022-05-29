@@ -1,7 +1,7 @@
 package battle
 ///=-------------------=///
 //  Written: 2022/05/20  //
-//  Edited:  2022/05/23  //
+//  Edited:  2022/05/28  //
 ///=-------------------=///
 
 
@@ -30,6 +30,9 @@ Battle :: struct {
 }
 
 
+//= Constants
+
+
 //= Procedures
 
 // Initialize battle structure
@@ -52,7 +55,7 @@ start_battle :: proc() {
 	testMon1.monsterType    = mon.MonsterType.Monstrosity;
 	testMon1.healthCur      = 100;
 	testMon1.healthMax      = 100;
-	testMon1.speed          =  20;
+	testMon1.speed          =  30;
 
 	testMon2: mon.Monster = {};
 	testMon1.playerOwned    = false;
@@ -65,6 +68,8 @@ start_battle :: proc() {
 	append(&battle.monsters, testMon2);
 	append(&battle.monsters, testMon2);
 	append(&battle.monsters, testMon1);
+
+	battle.player.monsters[0] = testMon1;
 }
 
 // Recalculate battle timeline
@@ -86,6 +91,7 @@ recalc_timeline :: proc() {
 	}
 }
 
+
 // Render ongoing battle
 // TODO: calculate enemy location based on screen size      ;; 
 // TODO: Enemies are displayed in reverse order             ;; Talk to Jarrod about how we want this to look!!!
@@ -96,32 +102,62 @@ recalc_timeline :: proc() {
 render_battle :: proc() {
 	if battle.isActive {
 		// Timeline
-		img: ray.Image   = ray.gen_image_color(1280,64,ray.BLACK);
-		tex: ray.Texture = ray.load_texture_from_image(img);
-		ray.draw_texture(tex,0,0,ray.WHITE);
-		ray.unload_image(img);
-		ray.unload_texture(tex);
-		ray.draw_text("TIMELINE...", 16, 16, 20, ray.WHITE);
+		ray.draw_texture(gra.graphics.timelineTexture, 0, 0, ray.WHITE);
+		ray.draw_text("TIMELINE", 24, 8, 20, ray.BLACK);
 
 		// Enemy monsters
 		for i:=0; i < len(battle.monsters); i+=1 {
 			// Sprites
-			ray.draw_texture(gra.graphics.monsterFrontTextures[mon.sprite(&battle.monsters[i])], i32(1000-(i*200)),64, ray.WHITE);
+			ray.draw_texture(
+				gra.graphics.monsterFrontTextures[mon.sprite(&battle.monsters[i])],
+				i32(1000 - (i * 224)), 64,
+				ray.WHITE);
+			
 			// Status bar
-			ray.draw_text(mon.name(        &battle.monsters[i]), 32, i32((i*64) +  96),20,ray.BLACK);
-			ray.draw_text(mon.health_ratio(&battle.monsters[i]), 32, i32((i*64) + 112),20,ray.BLACK);
+			ray.draw_text(
+				mon.name(&battle.monsters[i]),
+				i32(1000 - (i * 224)), 320,
+				20, ray.BLACK);
+			ray.draw_text(
+				mon.health_ratio(&battle.monsters[i]),
+				i32(1000 - (i * 224)), 336,
+				20, ray.BLACK);
 		}
 
 		// Player Monsters
 		for i:=0; i < len(ply.player.monsters); i+=1 {
 			// Sprites
-			ray.draw_texture(gra.graphics.monsterBackTextures[mon.sprite(&ply.player.monsters[i])], i32(80+(i*200)),i32(720-220), ray.WHITE);
+			ray.draw_texture(
+				gra.graphics.monsterBackTextures[mon.sprite(&ply.player.monsters[i])],
+				i32(80 + (i * 224)), i32(720 - 256),
+				ray.WHITE);
 			// Status bar
-			ray.draw_text(mon.name(        &ply.player.monsters[i]), i32(600), i32(550 + (i*80)),20,ray.BLACK);
-			ray.draw_text(mon.health_ratio(&ply.player.monsters[i]), i32(600), i32(566 + (i*80)),20,ray.BLACK);
+			ray.draw_text(
+				mon.name(&ply.player.monsters[i]),
+				i32(80 + (i * 224)), i32(720- 288),
+				20, ray.BLACK);
+			ray.draw_text(
+				mon.health_ratio(&ply.player.monsters[i]),
+				i32(80 + (i * 224)), i32(720 - 272),
+				20, ray.BLACK);
 		}
 
 		// Menu / Text boxes
-		ray.draw_texture_n_patch(gra.graphics.textboxTexture, gra.graphics.textboxNPatch, ray.Rectangle{800,400,480,320}, ray.Vector2{0,0}, 0, ray.WHITE);
+		ray.draw_texture_n_patch(
+			gra.graphics.textboxTexture,
+			gra.graphics.textboxNPatch,
+			ray.Rectangle{600, 400, 680, 320},
+			ray.Vector2{0,0},
+			0, ray.WHITE);
+		ray.draw_texture_n_patch(
+			gra.graphics.textboxTexture,
+			gra.graphics.textboxNPatch,
+			ray.Rectangle{600, (8 * 80), (8 * 85), (8 * 10)},
+			ray.Vector2{0,0},
+			0, ray.WHITE);
+		ray.draw_text(
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nPraesent iaculis dictum justo eget maximus.\nEtiam bibendum placerat mattis.\nSuspendisse viverra nulla eget ipsum aliquam porttitor.\nInteger turpis turpis, volutpat id metus eget, gravida tempus nulla.\nPellentesque ut turpis feugiat neque aliquam molestie sit amet eget arcu.\nMaecenas congue diam eleifend tortor mattis dapibus et at tortor.\nNulla facilisi.\nNam pulvinar tortor sit amet dolor tempus, ut porta urna cursus.",
+			632, 432,
+			20, ray.BLACK);
 	}
 }
