@@ -55,7 +55,7 @@ start_battle :: proc() {
 	testMon1.monsterType    = mon.MonsterType.Monstrosity;
 	testMon1.healthCur      = 100;
 	testMon1.healthMax      = 100;
-	testMon1.speed          =  30;
+	testMon1.agility        =  30;
 
 	testMon2: mon.Monster = {};
 	testMon1.playerOwned    = false;
@@ -63,7 +63,7 @@ start_battle :: proc() {
 	testMon2.monsterType    = mon.MonsterType.Puck;
 	testMon2.healthCur      = 100;
 	testMon2.healthMax      = 100;
-	testMon2.speed          =  20;
+	testMon1.agility        =  20;
 
 	append(&battle.monsters, testMon2);
 	append(&battle.monsters, testMon2);

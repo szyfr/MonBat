@@ -27,8 +27,20 @@ Monster :: struct {
 
 	healthCur,
 	healthMax:      u32,
+	manaCur,
+	manaMax:        u32,
 
-	speed:          u8,
+	level,
+	experience:     u32,
+
+	vitality,
+	mana,
+	strength,
+	magic,
+	endurance,
+	willpower,
+	luck,
+	agility:        u8,
 
 	attacks:        [dynamic]MonsterAttacks,
 }
@@ -43,6 +55,7 @@ check :: proc(monster: ^Monster) -> bool {
 }
 
 // Clears a monster to unitialized values
+// TODO: clear new structure elements
 clear :: proc(slot: ^Monster) {
 	slot.monsterType    = MonsterType.Empty;
 	slot.monsterSpecies = MonsterSpecies.Empty;
