@@ -8,6 +8,7 @@ package textbox
 
 import fmt "core:fmt"
 import str "core:strings"
+import io  "core:io"
 
 import ray "../../raylib"
 
@@ -33,6 +34,7 @@ TextboxData :: struct {
 	cursor:    ray.Texture,
 
 	textSpeed: u32,
+	updateTic: u32,
 
 	textboxes: [dynamic]Textbox,
 }
@@ -45,6 +47,7 @@ Textbox :: struct {
 
 	// TextboxType.normal
 	text:     [dynamic]string,
+	curText:  string,
 	// TextboxType.menu
 	options:  [dynamic]MenuOptions,
 	cursor:   u32,
@@ -68,8 +71,10 @@ MenuOptions :: struct {
 
 //= Procedures
 // TODO: create error checking procedure for initialization to check in detail
+// TODO: Clean up
 
 //- Initialization
+// TODO: load text speed
 // Initialize textbox data with a very basic gray bg and current font
 @(private)
 init_textbox_none :: proc(value: u8) -> u32 {
@@ -124,6 +129,10 @@ init_textbox_input :: proc(texture: ray.Texture = {}, npatch: ray.N_Patch_Info =
 	if font == {} do textboxData.font = ray.get_font_default();
 	else          do textboxData.font = font;
 
+	// Options
+	textboxData.textSpeed = 5;
+	textboxData.updateTic = 0;
+
 	// Textboxes
 	textboxData.textboxes = make([dynamic]Textbox);
 
@@ -148,6 +157,7 @@ create_textbox :: proc(position: ray.Vector2 = {0,0}, size: ray.Vector2 = {10,10
 	newBox.canBeClicked = false;
 	newBox.displayChar  = 0;
 	newBox.displayLine  = 0;
+	newBox.curText      = "";
 
 	// Unused values
 	newBox.options = nil;
@@ -192,13 +202,61 @@ create_menu :: proc(position: ray.Vector2 = {0,0}, size: ray.Vector2 = {10,10}, 
 //- 
 //
 update_textboxes :: proc() {
+	// Updating text
+	if textboxData.updateTic >= textboxData.textSpeed {
+		for i:=0; i < len(textboxData.textboxes); i+=1 {
+			txb: ^Textbox = &textboxData.textboxes[i];
 
+			textboxData.textboxes[i].displayChar += 1;
+
+	//		if !textboxData.textboxes[i].canBeClicked {
+			if int(textboxData.textboxes[i].displayLine) < len(textboxData.textboxes[i].text) {
+				line: u32 = textboxData.textboxes[i].displayLine;
+
+				reader: str.Reader;
+				str.reader_init(&reader, textboxData.textboxes[i].text[line]);
+
+				builder: str.Builder;
+				str.init_builder_none(&builder);
+				for f:u32=0; f < textboxData.textboxes[i].displayChar; f+=1 {
+					out, error := str.reader_read_byte(&reader);
+					
+					if error != io.Error.None {
+						textboxData.textboxes[i].canBeClicked = true;
+						break;
+					}
+
+					str.write_byte(&builder, out);
+				}
+
+				textboxData.textboxes[i].curText = str.to_string(builder);
+			}
+			
+		}
+		textboxData.updateTic = 0;
+	} else do textboxData.updateTic += 1;
+
+	// Updating state
+	if ray.is_key_pressed(ray.Keyboard_Key.KEY_SPACE) && len(textboxData.textboxes) > 0 {
+		if int(textboxData.textboxes[0].displayLine) + 1 < len(textboxData.textboxes[0].text) {
+			if textboxData.textboxes[0].canBeClicked {
+				textboxData.textboxes[0].displayLine += 1;
+				textboxData.textboxes[0].displayChar  = 0;
+				textboxData.textboxes[0].canBeClicked = false;
+			} else {
+				textboxData.textboxes[0].displayChar = u32(len(textboxData.textboxes[0].text[textboxData.textboxes[0].displayLine]));
+			}
+		} else do shave_textbox();
+	}
 }
 //
 draw_textboxes :: proc() {
 	for i:=0; i < len(textboxData.textboxes); i+=1 {
 		position: ray.Vector2 = textboxData.textboxes[i].position;
 		size: ray.Vector2     = textboxData.textboxes[i].size;
+
+		line: u32             = textboxData.textboxes[i].displayLine;
+		str: cstring          = str.clone_to_cstring(textboxData.textboxes[i].curText);
 
 		ray.draw_texture_n_patch(
 			textboxData.texture,
@@ -207,8 +265,24 @@ draw_textboxes :: proc() {
 			ray.Vector2{0,0},
 			0, ray.WHITE);
 		ray.draw_text(
-			textboxData.textboxes[i].text[textboxData.textboxes[i].displayLine],
-			//TODO: text
-			);
+			str,
+			i32(position.x + 32), i32(position.y + 32),
+			20, ray.BLACK);
+		delete(str);
 	}
+}
+
+
+//-
+//
+shave_textbox :: proc() {
+	fmt.printf("Shaving textboc\n");
+	newList: [dynamic]Textbox = make([dynamic]Textbox);
+
+	for i:=1; i < len(textboxData.textboxes); i+=1 {
+		append(&newList, textboxData.textboxes[i]);
+	}
+
+	delete(textboxData.textboxes);
+	textboxData.textboxes = newList;
 }

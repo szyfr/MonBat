@@ -42,6 +42,8 @@ main :: proc() {
 			if ray.is_key_down(ray.Keyboard_Key.KEY_D) do ply.player.camera.offset.x -= 1;
 
 			if ray.is_key_pressed(ray.Keyboard_Key.KEY_P) do bat.start_battle();
+
+			txt.update_textboxes();
 		}
 
 		// Drawing
