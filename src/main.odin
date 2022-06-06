@@ -17,29 +17,39 @@ import mon "core/monsters"
 import ply "core/player"
 
 
+test_proc1 :: proc() { fmt.printf("fuck1\n"); }
+test_proc2 :: proc() { fmt.printf("fuck2\n"); }
+
 //= Main
 main :: proc() {
 
 	main_init();
 
-//	test := txt.init_textbox();
 	test := txt.init_textbox(texture=gra.graphics.textboxTexture,npatch=gra.graphics.textboxNPatch);
 	fmt.printf("%i\n", test);
 
-	text: [dynamic]string = make([dynamic]string);
-	append(&text, "Fuck me up and down");
-	append(&text, "Fuck me sideways and frontways");
-	append(&text, "I wanna die bad.");
-	test  = txt.create_textbox(position={0,500},size={400,200}, text=text);
+//	text: [dynamic]string = make([dynamic]string);
+//	append(&text, "Fuck me up and down\nFucking shit\nholy cow, man.", "Fuck me sideways and frontways", "I wanna die bad.");
+//	test  = txt.create_textbox(position={0,500},size={400,200}, text=text);
+//	fmt.printf("%i\n", test);
+
+	text:    [dynamic]string          = make([dynamic]string);
+	choices: [dynamic]txt.MenuOptions = make([dynamic]txt.MenuOptions);
+	append(&text, "Make your choice...");
+	option1: txt.MenuOptions = {text="Choice1",effect=test_proc1};
+	option2: txt.MenuOptions = {text="Choice2",effect=test_proc2};
+	append(&choices, option1, option2);
+	test = txt.create_menu(position={0,500},size={600,200}, text=text, options=choices);
 	fmt.printf("%i\n", test);
+
 
 	for !ray.window_should_close() {
 		// Updating
 		{
-			if ray.is_key_down(ray.Keyboard_Key.KEY_W) do ply.player.camera.offset.y += 1;
-			if ray.is_key_down(ray.Keyboard_Key.KEY_S) do ply.player.camera.offset.y -= 1;
-			if ray.is_key_down(ray.Keyboard_Key.KEY_A) do ply.player.camera.offset.x += 1;
-			if ray.is_key_down(ray.Keyboard_Key.KEY_D) do ply.player.camera.offset.x -= 1;
+		//	if ray.is_key_down(ray.Keyboard_Key.KEY_W) do ply.player.camera.offset.y += 1;
+		//	if ray.is_key_down(ray.Keyboard_Key.KEY_S) do ply.player.camera.offset.y -= 1;
+		//	if ray.is_key_down(ray.Keyboard_Key.KEY_A) do ply.player.camera.offset.x += 1;
+		//	if ray.is_key_down(ray.Keyboard_Key.KEY_D) do ply.player.camera.offset.x -= 1;
 
 			if ray.is_key_pressed(ray.Keyboard_Key.KEY_P) do bat.start_battle();
 
