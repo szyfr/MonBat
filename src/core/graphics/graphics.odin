@@ -13,7 +13,7 @@ import ray "../../raylib"
 
 
 //= Constants
-IMAGE_IMPORT_MULTIPLIER :: 4
+IMAGE_IMPORT_MULTIPLIER :: 3
 
 
 //= Enumerations

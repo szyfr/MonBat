@@ -13,6 +13,7 @@ import ray "../../raylib"
 import gra "../graphics"
 import mon "../monsters"
 import ply "../player"
+import "../../skald"
 
 
 //= Global
@@ -141,23 +142,5 @@ render_battle :: proc() {
 				i32(80 + (i * 224)), i32(720 - 272),
 				20, ray.BLACK);
 		}
-
-		// Menu / Text boxes
-		ray.draw_texture_n_patch(
-			gra.graphics.textboxTexture,
-			gra.graphics.textboxNPatch,
-			ray.Rectangle{600, 400, 680, 320},
-			ray.Vector2{0,0},
-			0, ray.WHITE);
-		ray.draw_texture_n_patch(
-			gra.graphics.textboxTexture,
-			gra.graphics.textboxNPatch,
-			ray.Rectangle{600, (8 * 80), (8 * 85), (8 * 10)},
-			ray.Vector2{0,0},
-			0, ray.WHITE);
-		ray.draw_text(
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nPraesent iaculis dictum justo eget maximus.\nEtiam bibendum placerat mattis.\nSuspendisse viverra nulla eget ipsum aliquam porttitor.\nInteger turpis turpis, volutpat id metus eget, gravida tempus nulla.\nPellentesque ut turpis feugiat neque aliquam molestie sit amet eget arcu.\nMaecenas congue diam eleifend tortor mattis dapibus et at tortor.\nNulla facilisi.\nNam pulvinar tortor sit amet dolor tempus, ut porta urna cursus.",
-			632, 432,
-			20, ray.BLACK);
 	}
 }
