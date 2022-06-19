@@ -31,29 +31,13 @@ main :: proc() {
 	}
 
 	text: [dynamic]string;
-	append(&text, "Testing 1", "Testing 2", "Testing 3");
+	append(&text, "Testing 1");
+	options: [dynamic]skald.MenuOption;
+	append(&options, skald.MenuOption{"TEST1",test_proc1}, skald.MenuOption{"TEST2",test_proc2});
 	skald.create_textbox(
 		position=ray.Vector2{680,400}, size=ray.Vector2{600,320}, offset=ray.Vector2{32,32},
 		textDynamic=text,
-		options=);
-
-
-//	test := txt.init_textbox(texture=gra.graphics.textboxTexture,npatch=gra.graphics.textboxNPatch);
-//	fmt.printf("%i\n", test);
-
-//	text: [dynamic]string = make([dynamic]string);
-//	append(&text, "Fuck me up and down\nFucking shit\nholy cow, man.", "Fuck me sideways and frontways", "I wanna die bad.");
-//	test  = txt.create_textbox(position={0,500},size={400,200}, text=text);
-//	fmt.printf("%i\n", test);
-
-//	text:    [dynamic]string          = make([dynamic]string);
-//	choices: [dynamic]txt.MenuOptions = make([dynamic]txt.MenuOptions);
-//	append(&text, "Make your choice...");
-//	option1: txt.MenuOptions = {text="Choice1",effect=test_proc1};
-//	option2: txt.MenuOptions = {text="Choice2",effect=test_proc2};
-//	append(&choices, option1, option2);
-//	test = txt.create_menu(position={0,500},size={600,200}, text=text, options=choices);
-//	fmt.printf("%i\n", test);
+		options=options);
 
 
 	for !ray.window_should_close() {
