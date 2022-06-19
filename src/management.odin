@@ -1,19 +1,21 @@
 package main
-///=-------------------=///
-//  Written: 2022/05/20  //
-//  Edited:  2022/05/20  //
-///=-------------------=///
 
 
 
-//import "core:fmt"
-//import "core:strings"
-
+//= Imports
 import "raylib"
 import "skald"
 
+//= Constants
 
-//= Main initialization
+//= Global Variables
+
+//= Structures
+
+//= Enumerations
+
+//= Procedures
+// Main initialization
 initialize_core :: proc() {
 	// Raylib
 	raylib.set_trace_log_level(7);
@@ -29,14 +31,13 @@ initialize_core :: proc() {
 	// Outside packages
 	skald.init_skald(texture=graphicsStorage.textboxTexture);
 }
-
 free_core :: proc() {
 	
 	free_graphics();
 	free_player();
 	free_battle();
 
-//	skald.free_skald();
+	skald.free_skald();
 
 	raylib.close_window();
 }

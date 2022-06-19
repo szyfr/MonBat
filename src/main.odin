@@ -48,8 +48,15 @@ main :: proc() {
 	testMon1.healthMax = 100;
 	testMon1.agility   =  30;
 
-	append(&battleStructure.enemyMonsters, testMon1, testMon1);
+	testMon2: Monster = {};
+	testMon2.species   = .TEST_PIKACHU;
+	testMon2.healthCur = 100;
+	testMon2.healthMax = 100;
+	testMon2.agility   =  30;
 
+	append(&battleStructure.enemyMonsters, testMon1, testMon1, testMon2);
+	player.monsters[0] = testMon1;
+	player.monsters[1] = testMon2;
 
 	for !raylib.window_should_close() {
 		// Updating
@@ -71,7 +78,6 @@ main :: proc() {
 
 				skald.draw_textboxes();
 				render_battle();
-			//	raylib.draw_texture(graphicsStorage.monster_frontTextures[1],0,0,raylib.WHITE)
 				
 				raylib.draw_fps((8 * 3), (8 * 5));
 
