@@ -1,46 +1,57 @@
 package main
-///=-------------------=///
-//  Written: 2022/05/20  //
-//  Edited:  2022/05/20  //
-///=-------------------=///
 
 
 
+//= Imports
 import "core:fmt"
 import "core:strings"
 
-import ray "raylib"
-import gra "core/graphics"
-import txt "core/textbox"
-import bat "core/battle"
-import mon "core/monsters"
-import ply "core/player"
+import "raylib"
 import "skald"
 
+
+//= Constants
+screen_width  : i32 : 1280;
+screen_height : i32 : 720;
+
+
+//= Global Variables
+
+//= Structures
+
+//= Enumerations
+
+//= Procedures
 
 test_proc1 :: proc() { fmt.printf("fuck1\n"); }
 test_proc2 :: proc() { fmt.printf("fuck2\n"); }
 
-//= Main
+//- Main
 main :: proc() {
 
-	result := initialize_core();
-	if result {
-		free_core();
-		return;
-	}
+	initialize_core();
 
 	text: [dynamic]string;
 	append(&text, "Testing 1");
 	options: [dynamic]skald.MenuOption;
 	append(&options, skald.MenuOption{"TEST1",test_proc1}, skald.MenuOption{"TEST2",test_proc2});
 	skald.create_textbox(
-		position=ray.Vector2{680,400}, size=ray.Vector2{600,320}, offset=ray.Vector2{32,32},
+		position=raylib.Vector2{680,400}, size=raylib.Vector2{600,320}, offset=raylib.Vector2{32,32},
 		textDynamic=text,
 		options=options);
 
+	battleStructure.isActive = true;
 
-	for !ray.window_should_close() {
+	testMon1: Monster = {};
+	testMon1.species   = .TEST_WOOP;
+	testMon1.healthCur = 100;
+	testMon1.healthMax = 100;
+	testMon1.agility   =  30;
+
+	append(&battleStructure.enemyMonsters, testMon1, testMon1);
+
+
+	for !raylib.window_should_close() {
 		// Updating
 		{
 		//	if ray.is_key_down(ray.Keyboard_Key.KEY_W) do ply.player.camera.offset.y += 1;
@@ -48,28 +59,25 @@ main :: proc() {
 		//	if ray.is_key_down(ray.Keyboard_Key.KEY_A) do ply.player.camera.offset.x += 1;
 		//	if ray.is_key_down(ray.Keyboard_Key.KEY_D) do ply.player.camera.offset.x -= 1;
 
-			if ray.is_key_pressed(ray.Keyboard_Key.KEY_P) do bat.start_battle();
+		//	if raylib.is_key_pressed(raylib.Keyboard_Key.KEY_P) do bat.start_battle();
 
 			skald.update_textboxes();
 		}
 
 		// Drawing
 		{
-			ray.begin_drawing();
-				ray.clear_background(ray.RAYWHITE);
+			raylib.begin_drawing();
+				raylib.clear_background(raylib.RAYWHITE);
 
-				ray.begin_mode2d(ply.player.camera);
+				skald.draw_textboxes();
+				render_battle();
+			//	raylib.draw_texture(graphicsStorage.monster_frontTextures[1],0,0,raylib.WHITE)
+				
+				raylib.draw_fps((8 * 3), (8 * 5));
 
-					skald.draw_textboxes();
-
-					bat.render_battle();
-
-					ray.draw_fps((8 * 3), (8 * 5));
-
-				ray.end_mode2d();
-			ray.end_drawing();
+			raylib.end_drawing();
 		}
 	}
 
-	ray.close_window();
+	free_core();
 }
