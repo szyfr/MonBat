@@ -31,32 +31,52 @@ main :: proc() {
 
 	initialize_core();
 
-	text: [dynamic]string;
-	append(&text, "Testing 1");
-	options: [dynamic]skald.MenuOption;
-	append(&options, skald.MenuOption{"TEST1",test_proc1}, skald.MenuOption{"TEST2",test_proc2});
-	skald.create_textbox(
-		position=raylib.Vector2{680,400}, size=raylib.Vector2{600,320}, offset=raylib.Vector2{32,32},
-		textDynamic=text,
-		options=options);
+//	text: [dynamic]string;
+//	append(&text, "Testing 1");
+//	options: [dynamic]skald.MenuOption;
+//	append(&options, skald.MenuOption{"TEST1",test_proc1}, skald.MenuOption{"TEST2",test_proc2});
+//	skald.create_textbox(
+//		textboxRect=raylib.Rectangle{680,400,600,320}, offset=raylib.Vector2{32,32},
+//		textDynamic=text,fontSize=16,
+//		options=options);
 
 	battleStructure.isActive = true;
 
 	testMon1: Monster = {};
-	testMon1.species   = .TEST_WOOP;
-	testMon1.healthCur = 100;
-	testMon1.healthMax = 100;
-	testMon1.agility   =  30;
+	testMon1.initialized = true;
+	testMon1.species     = .TEST_WOOP;
+	testMon1.healthCur   = 100;
+	testMon1.healthMax   = 100;
+	testMon1.agility     =  30;
 
 	testMon2: Monster = {};
-	testMon2.species   = .TEST_PIKACHU;
-	testMon2.healthCur = 100;
-	testMon2.healthMax = 100;
-	testMon2.agility   =  30;
+	testMon2.initialized = true;
+	testMon2.species     = .TEST_PIKACHU;
+	testMon2.healthCur   = 100;
+	testMon2.healthMax   = 100;
+	testMon2.agility     =  40;
 
-	append(&battleStructure.enemyMonsters, testMon1, testMon1, testMon2);
-	player.monsters[0] = testMon1;
-	player.monsters[1] = testMon2;
+	testMon3: Monster = {};
+	testMon3.initialized = true;
+	testMon3.species     = .TEST_WOOP;
+	testMon3.healthCur   = 100;
+	testMon3.healthMax   = 100;
+	testMon3.agility     =  60;
+
+	testMon4: Monster = {};
+	testMon4.initialized = true;
+	testMon4.species     = .TEST_PIKACHU;
+	testMon4.healthCur   = 100;
+	testMon4.healthMax   = 100;
+	testMon4.agility     =  10;
+
+	append(&battleStructure.enemyMonsters, testMon1, testMon1, testMon2, testMon4, testMon4);
+	player.monsters[0] = testMon4;
+	player.monsters[0].playerOwned = true;
+	player.monsters[1] = testMon1;
+	player.monsters[1].playerOwned = true;
+
+	calculate_timeline();
 
 	for !raylib.window_should_close() {
 		// Updating
@@ -65,9 +85,11 @@ main :: proc() {
 		//	if ray.is_key_down(ray.Keyboard_Key.KEY_S) do ply.player.camera.offset.y -= 1;
 		//	if ray.is_key_down(ray.Keyboard_Key.KEY_A) do ply.player.camera.offset.x += 1;
 		//	if ray.is_key_down(ray.Keyboard_Key.KEY_D) do ply.player.camera.offset.x -= 1;
+			if raylib.is_key_pressed(raylib.Keyboard_Key.KEY_P) do battleStructure.turnPosition += 1;
+			if raylib.is_key_pressed(raylib.Keyboard_Key.KEY_O) do battleStructure.turnPosition -= 1;
 
 		//	if raylib.is_key_pressed(raylib.Keyboard_Key.KEY_P) do bat.start_battle();
-
+			update_battle();
 			skald.update_textboxes();
 		}
 
@@ -79,7 +101,7 @@ main :: proc() {
 				skald.draw_textboxes();
 				render_battle();
 				
-				raylib.draw_fps((8 * 3), (8 * 5));
+				raylib.draw_fps((8 * 3), (8 * 10));
 
 			raylib.end_drawing();
 		}

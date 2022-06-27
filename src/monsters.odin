@@ -14,6 +14,7 @@ import "core:strings"
 //= Structures
 Monster :: struct {
 	initialized: bool,
+	playerOwned: bool,
 
 	species: MonsterNames,
 
@@ -87,7 +88,7 @@ get_monster_texture_index :: proc(monster: ^Monster) -> int {
 	return int(monster.species); }
 get_monster_health_ratio  :: proc(monster: ^Monster) -> cstring {
 	builder: strings.Builder;
-	healthStr:  string  = fmt.sbprintf(&builder, "%i / %i", monster.healthCur, monster.healthMax);
+	healthStr:  string  = fmt.sbprintf(&builder, "%i/%i", monster.healthCur, monster.healthMax);
 	healthCStr: cstring = strings.clone_to_cstring(healthStr);
 
 	delete(healthStr);

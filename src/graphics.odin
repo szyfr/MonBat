@@ -19,9 +19,12 @@ GraphicsStorage :: struct {
 	monster_backTextures:  [MonsterNames.SIZE]raylib.Texture,
 
 	timelineTexture: raylib.Texture,
+	timelineIcon:    raylib.Texture,
 
 	textboxTexture: raylib.Texture,
 	textboxNPatch:  raylib.N_Patch_Info,
+
+	font: raylib.Font,
 }
 
 
@@ -71,6 +74,11 @@ initialize_graphics :: proc(multiplier: i32) {
 	graphicsStorage.timelineTexture = raylib.load_texture_from_image(img);
 	raylib.unload_image(img);
 
+	img = raylib.load_image("data/battle/timeline_icon.png");
+	raylib.image_resize_nn(&img, img.width * multiplier, img.height * multiplier);
+	graphicsStorage.timelineIcon = raylib.load_texture_from_image(img);
+	raylib.unload_image(img);
+
 	// Textbox
 	img = raylib.load_image("data/battle/textbox.png");
 	raylib.image_resize_nn(&img, img.width * multiplier, img.height * multiplier);
@@ -87,6 +95,9 @@ initialize_graphics :: proc(multiplier: i32) {
 	graphicsStorage.textboxNPatch.right  = i32(width)  / 3;
 	graphicsStorage.textboxNPatch.bottom = i32(height) / 3;
 	graphicsStorage.textboxNPatch.layout = i32(raylib.N_Patch_Layout.NPATCH_NINE_PATCH);
+
+	// Font
+	graphicsStorage.font = raylib.load_font("data/fonts/kong.ttf");
 }
 free_graphics :: proc() {
 	for i:=0; i < int(MonsterNames.SIZE); i+=1 {

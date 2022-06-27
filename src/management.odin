@@ -29,7 +29,7 @@ initialize_core :: proc() {
 	initialize_battle();
 
 	// Outside packages
-	skald.init_skald(texture=graphicsStorage.textboxTexture);
+	skald.init_skald(texture=graphicsStorage.textboxTexture, font=graphicsStorage.font);
 }
 free_core :: proc() {
 	
