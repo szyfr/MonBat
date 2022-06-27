@@ -91,8 +91,8 @@ monster_sort :: proc(list: ^[dynamic]^Monster) -> bool {
 update_battle :: proc() {
 
 	for i:=0; i<len(battleStructure.timeline); i+=1 {
-		if battleStructure.timeline[i].playerOwned do fmt.printf("player.%s, ",get_monster_name(battleStructure.timeline[i]));
-		else                                       do fmt.printf("enemy.%s, ",get_monster_name(battleStructure.timeline[i]));
+		if battleStructure.timeline[i].playerOwned do fmt.printf("player.%s: %i, ", get_monster_name(battleStructure.timeline[i]), battleStructure.timeline[i].agility);
+		else                                       do fmt.printf("enemy.%s: %i, ",  get_monster_name(battleStructure.timeline[i]), battleStructure.timeline[i].agility);
 
 	}
 	fmt.printf("\n");
@@ -102,28 +102,40 @@ render_battle :: proc() {
 		// Timeline
 		raylib.draw_texture(graphicsStorage.timelineTexture, 0, 32, raylib.WHITE);
 
-		max, min := battleStructure.timeline[0].agility, battleStructure.timeline[len(battleStructure.timeline)-1].agility;
-		last: f32;
-		ticker: u8 = 0;
-		offset: i32 = 50;
+		// Calculate min/max
+
 		for i:=0; i<len(battleStructure.timeline); i+=1 {
 			color: raylib.Color;
-
 			if battleStructure.timeline[i].playerOwned do color = raylib.GREEN;
 			else                                       do color = raylib.RED;
 
-			position: f32 = f32(battleStructure.timeline[i].agility - min) / f32(max);
-			if last == position {
-				ticker   += 1;
-				position += 0.05 * f32(ticker);
-			} else {
-				ticker = 0;
-				last = position;
-			}
+			position: f32 = (f32(i) / f32(len(battleStructure.timeline) - 1));
+			offset:   f32 = -f32((f32(battleStructure.turnPosition) / f32(len(battleStructure.timeline)-1)) * 568);
 
-
-			raylib.draw_texture(graphicsStorage.timelineIcon, i32(position * 568) + 50, 0, color);
+			raylib.draw_texture(graphicsStorage.timelineIcon, i32(position * 568) + 50 + i32(offset), 0, color);
 		}
+
+	//	max, min := battleStructure.timeline[0].agility, battleStructure.timeline[len(battleStructure.timeline)-1].agility;
+	//	last, ticker: f32 = 100, 0;
+	//	
+	//	for i:=0; i<len(battleStructure.timeline); i+=1 {
+	//		color: raylib.Color;
+	//		if battleStructure.timeline[i].playerOwned do color = raylib.GREEN;
+	//		else                                       do color = raylib.RED;
+//
+	//		position: f32 = 1 - (f32(battleStructure.timeline[i].agility - min) / f32(max - min));
+	//		if last == position {
+	//			ticker   += 1;
+	//			position += 0.05 * ticker;
+	//		//	if int(battleStructure.turnPosition) == i do offset = i32(position * 568);
+	//		} else {
+	//			ticker = 0;
+	//			last = position;
+	//		}
+//
+//
+	//		raylib.draw_texture(graphicsStorage.timelineIcon, i32(position * 568) + 50, 0, color);
+	//	}
 		
 		// Enemy monsters
 		for i:=0; i < len(battleStructure.enemyMonsters); i+=1 {
