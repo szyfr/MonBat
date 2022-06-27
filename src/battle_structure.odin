@@ -20,6 +20,7 @@ BattleStructure :: struct {
 	enemyMonsters: [dynamic]Monster,
 	timeline:      [dynamic]^Monster,
 	turnPosition:  u32,
+	roundPosition: u32,
 };
 
 
@@ -87,15 +88,33 @@ monster_sort :: proc(list: ^[dynamic]^Monster) -> bool {
 	return clean;
 }
 
+increment_turn :: proc() {
+	if int(battleStructure.turnPosition + 1) > len(battleStructure.timeline) - 1 {
+		battleStructure.turnPosition = 0;
+		//New round
+	} else {
+		battleStructure.turnPosition += 1;
+
+		if !battleStructure.timeline[battleStructure.turnPosition].playerOwned {
+			// AI stuff
+		}
+	}
+}
+
+increment_round :: proc() {
+	battleStructure.roundPosition += 1;
+	calculate_timeline();
+}
+
 //- Logic / Draw
 update_battle :: proc() {
 
-	for i:=0; i<len(battleStructure.timeline); i+=1 {
-		if battleStructure.timeline[i].playerOwned do fmt.printf("player.%s: %i, ", get_monster_name(battleStructure.timeline[i]), battleStructure.timeline[i].agility);
-		else                                       do fmt.printf("enemy.%s: %i, ",  get_monster_name(battleStructure.timeline[i]), battleStructure.timeline[i].agility);
-
-	}
-	fmt.printf("\n");
+//	for i:=0; i<len(battleStructure.timeline); i+=1 {
+//		if battleStructure.timeline[i].playerOwned do fmt.printf("player.%s: %i, ", get_monster_name(battleStructure.timeline[i]), battleStructure.timeline[i].agility);
+//		else                                       do fmt.printf("enemy.%s: %i, ",  get_monster_name(battleStructure.timeline[i]), battleStructure.timeline[i].agility);
+//
+//	}
+//	fmt.printf("\n");
 }
 render_battle :: proc() {
 	if battleStructure.isActive {
@@ -114,28 +133,6 @@ render_battle :: proc() {
 
 			raylib.draw_texture(graphicsStorage.timelineIcon, i32(position * 568) + 50 + i32(offset), 0, color);
 		}
-
-	//	max, min := battleStructure.timeline[0].agility, battleStructure.timeline[len(battleStructure.timeline)-1].agility;
-	//	last, ticker: f32 = 100, 0;
-	//	
-	//	for i:=0; i<len(battleStructure.timeline); i+=1 {
-	//		color: raylib.Color;
-	//		if battleStructure.timeline[i].playerOwned do color = raylib.GREEN;
-	//		else                                       do color = raylib.RED;
-//
-	//		position: f32 = 1 - (f32(battleStructure.timeline[i].agility - min) / f32(max - min));
-	//		if last == position {
-	//			ticker   += 1;
-	//			position += 0.05 * ticker;
-	//		//	if int(battleStructure.turnPosition) == i do offset = i32(position * 568);
-	//		} else {
-	//			ticker = 0;
-	//			last = position;
-	//		}
-//
-//
-	//		raylib.draw_texture(graphicsStorage.timelineIcon, i32(position * 568) + 50, 0, color);
-	//	}
 		
 		// Enemy monsters
 		for i:=0; i < len(battleStructure.enemyMonsters); i+=1 {
@@ -158,5 +155,41 @@ render_battle :: proc() {
 				raylib.Vector2{f32(screen_width) - 200 - (f32(i) * 150), 240},
 				16, 1, raylib.BLACK);
 		}
+
+		// Player Monsters
+		// 1
+		index  := get_monster_texture_index(&player.monsters[0]);
+		height := graphicsStorage.monster_backTextures[index].height;
+
+		raylib.draw_texture(
+			graphicsStorage.monster_backTextures[index],
+			100, 96 + height + 64,
+			raylib.WHITE);
+		raylib.draw_text_ex(
+			graphicsStorage.font,
+			get_monster_name(&player.monsters[0]),
+			raylib.Vector2{100, 256},
+			16, 1, raylib.BLACK);
+		raylib.draw_text_ex(
+			graphicsStorage.font,
+			get_monster_health_ratio(&player.monsters[0]),
+			raylib.Vector2{100, 272},
+			16, 1, raylib.BLACK);
+
+		index = get_monster_texture_index(&player.monsters[1]);
+		raylib.draw_texture(
+			graphicsStorage.monster_backTextures[index],
+			250, 96 + height + 64,
+			raylib.WHITE);
+		raylib.draw_text_ex(
+			graphicsStorage.font,
+			get_monster_name(&player.monsters[1]),
+			raylib.Vector2{250, 256},
+			16, 1, raylib.BLACK);
+		raylib.draw_text_ex(
+			graphicsStorage.font,
+			get_monster_health_ratio(&player.monsters[1]),
+			raylib.Vector2{250, 272},
+			16, 1, raylib.BLACK);
 	}
 }

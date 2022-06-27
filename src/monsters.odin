@@ -94,3 +94,12 @@ get_monster_health_ratio  :: proc(monster: ^Monster) -> cstring {
 	delete(healthStr);
 
 	return healthCStr; }
+
+use_attack :: proc(attack: MonsterAttacks) {
+	#partial switch (attack) {
+		case .Tackle:
+		break;
+		case .Growl:
+		break;
+	}
+}

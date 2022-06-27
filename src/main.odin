@@ -85,8 +85,7 @@ main :: proc() {
 		//	if ray.is_key_down(ray.Keyboard_Key.KEY_S) do ply.player.camera.offset.y -= 1;
 		//	if ray.is_key_down(ray.Keyboard_Key.KEY_A) do ply.player.camera.offset.x += 1;
 		//	if ray.is_key_down(ray.Keyboard_Key.KEY_D) do ply.player.camera.offset.x -= 1;
-			if raylib.is_key_pressed(raylib.Keyboard_Key.KEY_P) do battleStructure.turnPosition += 1;
-			if raylib.is_key_pressed(raylib.Keyboard_Key.KEY_O) do battleStructure.turnPosition -= 1;
+			if raylib.is_key_pressed(raylib.Keyboard_Key.KEY_P) do increment_turn();
 
 		//	if raylib.is_key_pressed(raylib.Keyboard_Key.KEY_P) do bat.start_battle();
 			update_battle();
