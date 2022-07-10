@@ -138,6 +138,15 @@ get_monster_name          :: proc(monster: ^Monster) -> cstring {
 
 	return "MISSINGNO";
 }
+get_monster_type          :: proc(monster: ^Monster) -> MonsterTypes {
+	#partial switch monster.species {
+		case .TEST_PIKACHU:
+			return .Puck;
+		case .TEST_WOOP:
+			return .Monstrosity;
+	}
+	return .empty;
+}
 get_monster_texture_index :: proc(monster: ^Monster) -> int {
 	return int(monster.species);
 }
@@ -150,6 +159,7 @@ get_monster_health_ratio  :: proc(monster: ^Monster) -> cstring {
 
 	return healthCStr;
 }
+
 // - Calculations
 calculate_health  :: proc(monster: ^Monster) {
 	total: u32 = (((2 * u32(monster.vitality)) * monster.level) / 100) + monster.level + 10;
