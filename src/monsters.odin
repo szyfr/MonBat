@@ -58,6 +58,7 @@ MonsterAttacks :: enum {
 create_monster :: proc{ create_monster_ptr, create_monster_full, }
 create_monster_ptr :: proc(monster: ^Monster, name: MonsterNames, exp: u32 = 100, player: bool = false) {
 	monster.species = name;
+	monster.initialized = true;
 
 	if player do monster.playerOwned = true;
 
