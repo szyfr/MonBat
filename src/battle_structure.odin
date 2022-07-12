@@ -4,7 +4,9 @@ package main
 
 //= Imports
 import "raylib"
+import "skald"
 import "core:fmt"
+import "core:strings"
 
 
 //= Constants
@@ -21,6 +23,9 @@ BattleStructure :: struct {
 	timeline:      [dynamic]^Monster,
 	turnPosition:  u32,
 	roundPosition: u32,
+
+	turnUpdated: bool,
+	target: int,
 };
 
 
@@ -35,6 +40,8 @@ initialize_battle :: proc() {
 	battleStructure.isActive      = false;
 	battleStructure.enemyMonsters = make([dynamic]Monster);
 	battleStructure.timeline      = make([dynamic]^Monster);
+	battleStructure.turnUpdated   = false;
+	battleStructure.target        = 5
 }
 free_battle :: proc() {
 	delete(battleStructure.enemyMonsters);
@@ -60,7 +67,7 @@ calculate_timeline :: proc() -> bool {
 
 	return res;
 }
-monster_sort :: proc(list: ^[dynamic]^Monster) -> bool {
+monster_sort       :: proc(list: ^[dynamic]^Monster) -> bool {
 	length := len(list);
 
 	if length < 2 do return true;
@@ -87,34 +94,92 @@ monster_sort :: proc(list: ^[dynamic]^Monster) -> bool {
 
 	return clean;
 }
+choose_target      :: proc() {
+	battleStructure.target = int(skald.textboxCoreData.textboxes[0].positionCursor);
+	battleStructure.turnUpdated = false;
+}
+choose_attack      :: proc() {
+	user:   ^Monster = battleStructure.timeline[battleStructure.turnPosition];
+	target: ^Monster = &battleStructure.enemyMonsters[battleStructure.target];
+	choice: int      = int(skald.textboxCoreData.textboxes[0].positionCursor);
+
+	use_attack(user=user, target=target, moveIndex=choice);
+
+	battleStructure.turnUpdated   = false;
+	battleStructure.target        = 5
+
+	increment_turn();
+}
+get_enemy_list     :: proc() -> [dynamic]string {
+	str: [dynamic]string;
+
+//	for i:=len(battleStructure.enemyMonsters)-1; i!=-1; i-=1 {
+	for i:=0; i<len(battleStructure.enemyMonsters); i+=1 {
+		cstr: cstring = get_monster_name(&battleStructure.enemyMonsters[i]);
+		append(&str, strings.clone_from_cstring(cstr));
+	}
+
+	return str;
+}
+
 
 increment_turn :: proc() {
 	if int(battleStructure.turnPosition + 1) > len(battleStructure.timeline) - 1 {
 		battleStructure.turnPosition = 0;
-		//New round
+		increment_round();
 	} else {
 		battleStructure.turnPosition += 1;
-
-		if !battleStructure.timeline[battleStructure.turnPosition].playerOwned {
-			// AI stuff
-		}
+		battleStructure.turnUpdated   = false;
 	}
 }
-
 increment_round :: proc() {
 	battleStructure.roundPosition += 1;
+	battleStructure.turnUpdated    = false;
 	calculate_timeline();
 }
 
 //- Logic / Draw
 update_battle :: proc() {
+	if !battleStructure.turnUpdated {
+		battleStructure.turnUpdated = true;
 
-//	for i:=0; i<len(battleStructure.timeline); i+=1 {
-//		if battleStructure.timeline[i].playerOwned do fmt.printf("player.%s: %i, ", get_monster_name(battleStructure.timeline[i]), battleStructure.timeline[i].agility);
-//		else                                       do fmt.printf("enemy.%s: %i, ",  get_monster_name(battleStructure.timeline[i]), battleStructure.timeline[i].agility);
-//
-//	}
-//	fmt.printf("\n");
+		if battleStructure.timeline[battleStructure.turnPosition].playerOwned {
+			// player turn
+			if battleStructure.target == 5 {
+				battleStructure.target = 5;
+				user: ^Monster         = battleStructure.timeline[battleStructure.turnPosition];
+
+				options: [dynamic]skald.MenuOption;
+				str:     [dynamic]string = get_enemy_list();
+
+				for i:=0; i<len(str); i+=1 {
+					append(&options, skald.MenuOption{str[i], choose_target});
+				}
+
+				skald.create_textbox(
+					textboxRect=raylib.Rectangle{0, 460, 1280, 260},
+					fontSize=16,
+					textSingle="Choose target",
+					options=options);
+			} else {
+				options: [dynamic]skald.MenuOption;
+				str:     [dynamic]string = get_monster_attack_list(battleStructure.timeline[battleStructure.turnPosition]);
+
+				for i:=0; i<len(str); i+=1 {
+					append(&options, skald.MenuOption{str[i], choose_attack})
+				}
+
+				skald.create_textbox(
+					textboxRect=raylib.Rectangle{0, 460, 1280, 260},
+					fontSize=16,
+					textSingle="Choose attack",
+					options=options);
+			}
+			
+		} else {
+			// AI turn
+		}
+	}
 }
 render_battle :: proc() {
 	if battleStructure.isActive {

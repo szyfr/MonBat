@@ -13,12 +13,12 @@ import "../raylib"
 //= Constants
 
 //= Global Variables
-@(private)
+//@(private)
 textboxCoreData: ^TextboxCoreData;
 
 
 //= Structures
-@(private)
+//@(private)
 TextboxCoreData :: struct {
 	textspeed: u8,
 
@@ -33,7 +33,7 @@ TextboxCoreData :: struct {
 	textboxes:       [dynamic]Textbox,
 }
 // TODO: color
-@(private)
+//@(private)
 Textbox :: struct {
 	textboxRect:        raylib.Rectangle,
 	offset:             raylib.Vector2,

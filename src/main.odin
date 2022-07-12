@@ -93,7 +93,7 @@ initialize_core :: proc() {
 	initialize_battle();
 
 	// Outside packages
-	skald.init_skald(texture=graphicsStorage.textboxTexture, font=graphicsStorage.font);
+	skald.init_skald(texture=graphicsStorage.textboxTexture, font=graphicsStorage.font, speed=0);
 }
 free_core :: proc() {
 	

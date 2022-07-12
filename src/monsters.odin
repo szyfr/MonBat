@@ -48,6 +48,7 @@ MonsterAttacks :: enum {
 	// Aberration
 	// Otherworlder
 	// Puck
+	ThunderShock,
 
 	SIZE, };
 
@@ -78,6 +79,8 @@ create_monster_ptr :: proc(monster: ^Monster, name: MonsterNames, exp: u32 = 100
 
 			monster.agility    = 40;
 			monster.luck       = 10;
+
+			append(&monster.attacks, MonsterAttacks.ThunderShock, MonsterAttacks.Growl);
 			break;
 		case .TEST_WOOP:
 			monster.vitality   = 30;
@@ -91,6 +94,8 @@ create_monster_ptr :: proc(monster: ^Monster, name: MonsterNames, exp: u32 = 100
 
 			monster.agility    = 20;
 			monster.luck       = 20;
+
+			append(&monster.attacks, MonsterAttacks.Tackle, MonsterAttacks.Growl);
 			break;
 	}
 
@@ -159,6 +164,25 @@ get_monster_health_ratio  :: proc(monster: ^Monster) -> cstring {
 
 	return healthCStr;
 }
+get_monster_attack        :: proc(monster: ^Monster, index: int) -> cstring {
+	#partial switch monster.attacks[index] {
+		case .Tackle:       return "Tackle";
+		case .Growl:        return "Growl";
+		case .ThunderShock: return "Thunder shock";
+	}
+	return "NULL";
+}
+get_monster_attack_list   :: proc(monster: ^Monster) -> [dynamic]string {
+	str: [dynamic]string;
+
+
+	for i:=0; i<len(monster.attacks); i+=1 {
+		cstr: cstring = get_monster_attack(monster, i);
+		append(&str, strings.clone_from_cstring(cstr));
+	}
+
+	return str;
+}
 
 // - Calculations
 calculate_health  :: proc(monster: ^Monster) {
@@ -185,11 +209,14 @@ calculate_levelup :: proc(monster: ^Monster) {
 }
 
 // - Interaction
-use_attack :: proc(attack: MonsterAttacks) {
-	#partial switch (attack) {
+use_attack :: proc(user: ^Monster, target: ^Monster, moveIndex: int) {
+	#partial switch user.attacks[moveIndex] {
 		case .Tackle:
-		break;
+			break;
 		case .Growl:
-		break;
+			break;
+		case .ThunderShock:
+			target.healthCur -= 10;
+			break;
 	}
 }
