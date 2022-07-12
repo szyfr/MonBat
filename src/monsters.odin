@@ -19,8 +19,8 @@ Monster :: struct {
 
 	species: MonsterNames,
 
-	healthCur, healthMax:  u32,
-	manaCur,   manaMax:    u32,
+	healthCur, healthMax:  i32,
+	manaCur,   manaMax:    i32,
 	level,     experience: u32,
 
 	vitality,  mana,
@@ -56,8 +56,8 @@ MonsterAttacks :: enum {
 //= Procedures
 
 // - Creation / destruction
-create_monster :: proc{ create_monster_ptr, create_monster_full, }
-create_monster_ptr :: proc(monster: ^Monster, name: MonsterNames, exp: u32 = 100, player: bool = false) {
+create_monster      :: proc{ create_monster_ptr, create_monster_full, }
+create_monster_ptr  :: proc(monster: ^Monster, name: MonsterNames, exp: u32 = 100, player: bool = false) {
 	monster.species = name;
 	monster.initialized = true;
 
@@ -110,7 +110,7 @@ create_monster_full :: proc(name: MonsterNames, exp: u32 = 100, player: bool = f
 
 	return monster;
 }
-clear_monster  :: proc(monster: ^Monster) {
+clear_monster       :: proc(monster: ^Monster) {
 	monster.species = .empty;
 
 	monster.healthCur  = 0;
@@ -130,6 +130,17 @@ clear_monster  :: proc(monster: ^Monster) {
 
 	delete(monster.attacks);
 	monster.attacks = make([dynamic]MonsterAttacks);
+}
+kill_monster        :: proc(monster: ^Monster) {
+	temp: int = 0;
+
+	for i:=0; i<len(battleStructure.enemyMonsters); i+=1 {
+		if compare_monsters(&battleStructure.enemyMonsters[i], monster) do break;
+	}
+
+	//TODO: replace this with and actual deletion. 
+	clear_monster(&battleStructure.enemyMonsters[temp]);
+	calculate_timeline();
 }
 
 // - Information
@@ -183,15 +194,31 @@ get_monster_attack_list   :: proc(monster: ^Monster) -> [dynamic]string {
 
 	return str;
 }
+compare_monsters          :: proc(mon1: ^Monster, mon2: ^Monster) -> bool {
+	result: bool = true;
+
+	if mon1.species != mon2.species       do result = false;
+
+	if mon1.healthCur != mon2.healthCur   do result = false;
+	if mon1.healthMax != mon2.healthMax   do result = false;
+
+	if mon1.manaCur != mon2.manaCur       do result = false;
+	if mon1.manaMax != mon2.manaMax       do result = false;
+
+	if mon1.level != mon2.level           do result = false;
+	if mon1.experience != mon2.experience do result = false;
+
+	return result;
+}
 
 // - Calculations
 calculate_health  :: proc(monster: ^Monster) {
-	total: u32 = (((2 * u32(monster.vitality)) * monster.level) / 100) + monster.level + 10;
+	total: i32 = (((2 * i32(monster.vitality)) * i32(monster.level)) / 100) + i32(monster.level) + 10;
 
 	monster.healthCur, monster.healthMax = total, total;
 }
 calculate_mana    :: proc(monster: ^Monster) {
-	total: u32 = (((2 * u32(monster.mana)) * monster.level) / 100) + monster.level;
+	total: i32 = (((2 * i32(monster.mana)) * i32(monster.level)) / 100) + i32(monster.level);
 
 	monster.manaCur, monster.manaMax = total, total;
 }
@@ -209,14 +236,20 @@ calculate_levelup :: proc(monster: ^Monster) {
 }
 
 // - Interaction
+// TODO: Update to have actual calculations
 use_attack :: proc(user: ^Monster, target: ^Monster, moveIndex: int) {
 	#partial switch user.attacks[moveIndex] {
 		case .Tackle:
+			target.healthCur -= 10;
 			break;
 		case .Growl:
 			break;
 		case .ThunderShock:
 			target.healthCur -= 10;
 			break;
+	}
+
+	if target.healthCur <= 0 {
+		kill_monster(target);
 	}
 }

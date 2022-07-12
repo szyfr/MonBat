@@ -113,7 +113,7 @@ choose_attack      :: proc() {
 get_enemy_list     :: proc() -> [dynamic]string {
 	str: [dynamic]string;
 
-//	for i:=len(battleStructure.enemyMonsters)-1; i!=-1; i-=1 {
+	//for i:=len(battleStructure.enemyMonsters)-1; i!=-1; i-=1 {
 	for i:=0; i<len(battleStructure.enemyMonsters); i+=1 {
 		cstr: cstring = get_monster_name(&battleStructure.enemyMonsters[i]);
 		append(&str, strings.clone_from_cstring(cstr));
@@ -145,6 +145,7 @@ update_battle :: proc() {
 
 		if battleStructure.timeline[battleStructure.turnPosition].playerOwned {
 			// player turn
+			// TODO: make it able to go back to target selection
 			if battleStructure.target == 5 {
 				battleStructure.target = 5;
 				user: ^Monster         = battleStructure.timeline[battleStructure.turnPosition];
@@ -189,36 +190,40 @@ render_battle :: proc() {
 		// Calculate min/max
 
 		for i:=0; i<len(battleStructure.timeline); i+=1 {
-			color: raylib.Color;
-			if battleStructure.timeline[i].playerOwned do color = raylib.GREEN;
-			else                                       do color = raylib.RED;
+			if battleStructure.timeline[i].species != .empty {
+				color: raylib.Color;
+				if battleStructure.timeline[i].playerOwned do color = raylib.GREEN;
+				else                                       do color = raylib.RED;
 
-			position: f32 = (f32(i) / f32(len(battleStructure.timeline) - 1));
-			offset:   f32 = -f32((f32(battleStructure.turnPosition) / f32(len(battleStructure.timeline)-1)) * 568);
+				position: f32 = (f32(i) / f32(len(battleStructure.timeline) - 1));
+				offset:   f32 = -f32((f32(battleStructure.turnPosition) / f32(len(battleStructure.timeline)-1)) * 568);
 
-			raylib.draw_texture(graphicsStorage.timelineIcon, i32(position * 568) + 50 + i32(offset), 0, color);
+				raylib.draw_texture(graphicsStorage.timelineIcon, i32(position * 568) + 50 + i32(offset), 0, color);
+			}
 		}
 		
 		// Enemy monsters
 		for i:=0; i < len(battleStructure.enemyMonsters); i+=1 {
-			monster: ^Monster = &battleStructure.enemyMonsters[i];
-			monsterIndex: int = get_monster_texture_index(monster);
+			if battleStructure.enemyMonsters[i].species != .empty {
+				monster: ^Monster = &battleStructure.enemyMonsters[i];
+				monsterIndex: int = get_monster_texture_index(monster);
 
-			raylib.draw_texture(
-				graphicsStorage.monster_frontTextures[monsterIndex],
-				screen_width - 200 - (i32(i) * 150), 96,
-				raylib.WHITE);
+				raylib.draw_texture(
+					graphicsStorage.monster_frontTextures[monsterIndex],
+					screen_width - 200 - (i32(i) * 150), 96,
+					raylib.WHITE);
 
-			raylib.draw_text_ex(
-				graphicsStorage.font,
-				get_monster_name(monster),
-				raylib.Vector2{f32(screen_width) - 200 - (f32(i) * 150), 224},
-				16, 1, raylib.BLACK);
-			raylib.draw_text_ex(
-				graphicsStorage.font,
-				get_monster_health_ratio(monster),
-				raylib.Vector2{f32(screen_width) - 200 - (f32(i) * 150), 240},
-				16, 1, raylib.BLACK);
+				raylib.draw_text_ex(
+					graphicsStorage.font,
+					get_monster_name(monster),
+					raylib.Vector2{f32(screen_width) - 200 - (f32(i) * 150), 224},
+					16, 1, raylib.BLACK);
+				raylib.draw_text_ex(
+					graphicsStorage.font,
+					get_monster_health_ratio(monster),
+					raylib.Vector2{f32(screen_width) - 200 - (f32(i) * 150), 240},
+					16, 1, raylib.BLACK);
+			}
 		}
 
 		// Player Monsters
