@@ -3,7 +3,9 @@ package main
 
 //= Imports
 import "raylib"
+import "skald"
 
+import "graphics"
 import "player"
 
 
@@ -19,12 +21,13 @@ gamedata : ^GameData
 
 //= Structures
 GameData :: struct {
-	player : ^player.Player,
+	player       : ^player.Player,
+	graphicsData : ^graphics.GraphicsData,
 }
 
 
 //= Procedures
-//*  Initialize / Free core data
+//*  Reification of core data
 initialize_core :: proc() {
 	//* Raylib
 	raylib.set_trace_log_level(7)
@@ -33,17 +36,24 @@ initialize_core :: proc() {
 	raylib.set_exit_key(raylib.Keyboard_Key.KEY_END)
 
 	//* Game
-	gamedata        = new(GameData)
-	gamedata.player = player.init()
+	gamedata              = new(GameData)
+	gamedata.player       = player.init()
+	gamedata.graphicsData = graphics.init()
 
 	//* Other
-//	skald.init_skald()
+	skald.init_skald(
+		texture = gamedata.graphicsData.textboxTexture,
+		font    = gamedata.graphicsData.font,
+		speed   = 0,
+	)
 }
 free_core :: proc() {
 	//* Other
 
 	//* Game
 	player.free(gamedata.player)
+	graphics.free(gamedata.graphicsData)
+	free(gamedata)
 	
 	//* Raylib
 	raylib.close_window();

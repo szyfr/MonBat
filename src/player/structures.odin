@@ -2,7 +2,6 @@ package player
 
 
 //= Imports
-//import "../main"
 import "../monsters"
 
 
@@ -15,15 +14,3 @@ Player :: struct {
 
 
 //= Enumerations
-
-//= Procedures
-// TODO: Load from save
-//* Initialize / Free Player
-init :: proc() -> ^Player {
-	player := new(Player)
-
-	return player
-}
-free :: proc(player: ^Player) {
-	free(player);
-}
