@@ -159,7 +159,9 @@ update_battle :: proc() {
 
 				skald.create_textbox(
 					textboxRect=raylib.Rectangle{0, 460, 1280, 260},
+					optionsRect={980,460,300,100},
 					fontSize=16,
+					offset={32,32},
 					textSingle="Choose target",
 					options=options);
 			} else {
