@@ -1,6 +1,8 @@
 package monsters
 
 
+//= Imports
+
 //= Structures
 Monster :: struct {
 	initialized: bool,

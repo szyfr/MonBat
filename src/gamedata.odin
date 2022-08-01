@@ -5,6 +5,7 @@ package main
 import "raylib"
 import "skald"
 
+import "combat"
 import "graphics"
 import "player"
 
@@ -23,10 +24,12 @@ gamedata : ^GameData
 GameData :: struct {
 	player       : ^player.Player,
 	graphicsData : ^graphics.GraphicsData,
+	combatData   : ^combat.CombatData,
 }
 
 
 //= Procedures
+
 //*  Reification of core data
 initialize_core :: proc() {
 	//* Raylib
@@ -39,6 +42,7 @@ initialize_core :: proc() {
 	gamedata              = new(GameData)
 	gamedata.player       = player.init()
 	gamedata.graphicsData = graphics.init()
+	gamedata.combatData   = combat.init()
 
 	//* Other
 	skald.init_skald(
@@ -51,8 +55,9 @@ free_core :: proc() {
 	//* Other
 
 	//* Game
-	player.free(gamedata.player)
+	combat.free(gamedata.combatData)
 	graphics.free(gamedata.graphicsData)
+	player.free(gamedata.player)
 	free(gamedata)
 	
 	//* Raylib

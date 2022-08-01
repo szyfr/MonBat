@@ -26,4 +26,5 @@ main :: proc() {
 		raylib.end_drawing()
 	}
 
+	free_core()
 }
