@@ -5,9 +5,9 @@ package graphics
 import "core:fmt"
 import "core:strings"
 
-import "../raylib"
+import "vendor:raylib"
 
-import "../monsters"
+import "../gamedata"
 
 
 //= Constants
@@ -15,45 +15,51 @@ IMAGE_SIZE_MULITPLIER : i32 : 2
 
 
 //= Procedures
+init :: proc() {
+	using raylib, gamedata
 
-//* Reification of Graphics
-init :: proc() -> ^GraphicsData {
-	graphicsData := new(GraphicsData)
+	gamedata.graphicsdata = new(GraphicsData)
 
-	//* Monster Front Textures
-	for i:=0; i<len(graphicsData.monster_frontTextures); i+=1 {
+	//* Front monster textures
+	for i:=0; i<len(gamedata.graphicsdata.monster_frontTextures); i+=1 {
+		//* Generate name
 		builder: strings.Builder;
 		locationStr  : string  = fmt.sbprintf(&builder, "data/battle/FRONT_%i.png", i)
 		locationCStr : cstring = strings.clone_to_cstring(locationStr)
 
-		img : raylib.Image = raylib.load_image(locationCStr)
-		raylib.image_resize_nn(
+		//* Load texture
+		img : raylib.Image = raylib.LoadImage(locationCStr)
+		raylib.ImageResizeNN(
 			&img,
 			img.width*IMAGE_SIZE_MULITPLIER,
 			img.height*IMAGE_SIZE_MULITPLIER,
 		)
-		graphicsData.monster_frontTextures[i] = raylib.load_texture_from_image(img)
+		gamedata.graphicsdata.monster_frontTextures[i] = raylib.LoadTextureFromImage(img)
 
-		raylib.unload_image(img)
+		//* Cleanup
+		raylib.UnloadImage(img)
 		delete(locationStr)
 		delete(locationCStr)
 		strings.reset_builder(&builder)
 	}
-	//* Monster Back Textures
-	for i:=0; i<len(graphicsData.monster_backTextures); i+=1 {
+	//* Back monster textures
+	for i:=0; i<len(gamedata.graphicsdata.monster_backTextures); i+=1 {
+		//* Generate name
 		builder: strings.Builder;
 		locationStr  : string  = fmt.sbprintf(&builder, "data/battle/BACK_%i.png", i)
 		locationCStr : cstring = strings.clone_to_cstring(locationStr)
 
-		img : raylib.Image = raylib.load_image(locationCStr)
-		raylib.image_resize_nn(
+		//* Load texture
+		img : raylib.Image = raylib.LoadImage(locationCStr)
+		raylib.ImageResizeNN(
 			&img,
 			img.width*IMAGE_SIZE_MULITPLIER,
 			img.height*IMAGE_SIZE_MULITPLIER,
 		)
-		graphicsData.monster_backTextures[i] = raylib.load_texture_from_image(img)
+		gamedata.graphicsdata.monster_backTextures[i] = raylib.LoadTextureFromImage(img)
 
-		raylib.unload_image(img)
+		//* Cleanup
+		raylib.UnloadImage(img)
 		delete(locationStr)
 		delete(locationCStr)
 		strings.reset_builder(&builder)
@@ -62,63 +68,63 @@ init :: proc() -> ^GraphicsData {
 	img : raylib.Image
 
 	//* Timeline
-	img = raylib.load_image("data/battle/timeline.png")
-	raylib.image_resize_nn(
+	img = raylib.LoadImage("data/battle/timeline.png")
+	raylib.ImageResizeNN(
 		&img,
 		img.width*IMAGE_SIZE_MULITPLIER,
 		img.height*IMAGE_SIZE_MULITPLIER,
 	)
-	graphicsData.timelineTexture = raylib.load_texture_from_image(img)
-	raylib.unload_image(img)
+	gamedata.graphicsdata.timelineTexture = raylib.LoadTextureFromImage(img)
+	raylib.UnloadImage(img)
 
 	//* Timeline Icon
-	img = raylib.load_image("data/battle/timeline_icon.png")
-	raylib.image_resize_nn(
+	img = raylib.LoadImage("data/battle/timeline_icon.png")
+	raylib.ImageResizeNN(
 		&img,
 		img.width*IMAGE_SIZE_MULITPLIER,
 		img.height*IMAGE_SIZE_MULITPLIER,
 	)
-	graphicsData.timelineIconTexture = raylib.load_texture_from_image(img)
-	raylib.unload_image(img)
+	gamedata.graphicsdata.timelineIconTexture = raylib.LoadTextureFromImage(img)
+	raylib.UnloadImage(img)
 
 	//* Textbox
-	img = raylib.load_image("data/battle/textbox.png")
-	raylib.image_resize_nn(
+	img = raylib.LoadImage("data/battle/textbox.png")
+	raylib.ImageResizeNN(
 		&img,
 		img.width*IMAGE_SIZE_MULITPLIER,
 		img.height*IMAGE_SIZE_MULITPLIER,
 	)
-	graphicsData.textboxTexture = raylib.load_texture_from_image(img)
-	raylib.unload_image(img)
+	gamedata.graphicsdata.textboxTexture = raylib.LoadTextureFromImage(img)
+	raylib.UnloadImage(img)
 
-	width:  f32 = f32(graphicsData.textboxTexture.width)
-	height: f32 = f32(graphicsData.textboxTexture.height)
+	width:  f32 = f32(gamedata.graphicsdata.textboxTexture.width)
+	height: f32 = f32(gamedata.graphicsdata.textboxTexture.height)
 
-	graphicsData.textboxNPatch = {};
-	graphicsData.textboxNPatch.source = raylib.Rectangle{0, 0, width, height}
-	graphicsData.textboxNPatch.left   = i32(width)  / 3
-	graphicsData.textboxNPatch.top    = i32(height) / 3
-	graphicsData.textboxNPatch.right  = i32(width)  / 3
-	graphicsData.textboxNPatch.bottom = i32(height) / 3
-	graphicsData.textboxNPatch.layout = i32(raylib.N_Patch_Layout.NPATCH_NINE_PATCH)
+	gamedata.graphicsdata.textboxNPatch = {};
+	gamedata.graphicsdata.textboxNPatch.source = raylib.Rectangle{0, 0, width, height}
+	gamedata.graphicsdata.textboxNPatch.left   = i32(width)  / 3
+	gamedata.graphicsdata.textboxNPatch.top    = i32(height) / 3
+	gamedata.graphicsdata.textboxNPatch.right  = i32(width)  / 3
+	gamedata.graphicsdata.textboxNPatch.bottom = i32(height) / 3
+	gamedata.graphicsdata.textboxNPatch.layout = .NINE_PATCH
 
 	//* Font
-	graphicsData.font = raylib.load_font("data/fonts/kong.ttf");
-
-	return graphicsData
+	gamedata.graphicsdata.font = raylib.LoadFont("data/fonts/kong.ttf");
 }
-free :: proc(graphicsData: ^GraphicsData) {
+free_data :: proc() {
+	using gamedata
+
 	//* Front and back textures
-	for i:=0; i<int(monsters.MonsterNames.SIZE); i+=1 {
-		raylib.unload_texture(graphicsData.monster_backTextures[i])
-		raylib.unload_texture(graphicsData.monster_frontTextures[i])
+	for i:=0; i<len(gamedata.graphicsdata.monster_backTextures); i+=1 {
+		raylib.UnloadTexture(gamedata.graphicsdata.monster_backTextures[i])
+		raylib.UnloadTexture(gamedata.graphicsdata.monster_frontTextures[i])
 	}
 	//* Timeline
-	raylib.unload_texture(graphicsData.timelineTexture)
-	raylib.unload_texture(graphicsData.timelineIconTexture)
+	raylib.UnloadTexture(gamedata.graphicsdata.timelineTexture)
+	raylib.UnloadTexture(gamedata.graphicsdata.timelineIconTexture)
 	//* Textbox
-	raylib.unload_texture(graphicsData.textboxTexture)
-	raylib.unload_font(graphicsData.font)
+	raylib.UnloadTexture(gamedata.graphicsdata.textboxTexture)
+	raylib.UnloadFont(gamedata.graphicsdata.font)
 
-	free(graphicsData);
+	free(gamedata.graphicsdata);
 }

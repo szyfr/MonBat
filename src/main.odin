@@ -2,29 +2,29 @@ package main
 
 
 //= Imports
-import "core:fmt"
-import "core:strings"
+import "vendor:raylib"
 
-import "raylib"
-import "skald"
+import "gamedata"
 
 
-//=  Main
+//= Constants
+DEBUG :: true
+
+
+//= Main
 main :: proc() {
+	init()
+	defer free_data()
 
-	initialize_core()
-
-	for !raylib.window_should_close() {
+	for !raylib.WindowShouldClose() {
 		//* Update
 
 		//* Draw
-		raylib.begin_drawing()
-		raylib.clear_background(raylib.RAYWHITE)
+		raylib.BeginDrawing()
+		raylib.ClearBackground(raylib.RAYWHITE)
 
-		raylib.draw_fps(24, 80);
+		raylib.DrawFPS(24,80)
 
-		raylib.end_drawing()
+		raylib.EndDrawing()
 	}
-
-	free_core()
 }

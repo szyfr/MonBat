@@ -2,23 +2,25 @@ package player
 
 
 //= Imports
-import "../monsters"
+import "core:fmt"
+import "core:strings"
 
+import "vendor:raylib"
 
-//= Constants
+import "../gamedata"
+
 
 //= Procedures
+//TODO: Load player from save data
+init :: proc() {
+	using gamedata
 
-//* Reification of Player
-// TODO: Load from save
-init :: proc() -> ^Player {
-	player := new(Player)
+	gamedata.playerdata = new(PlayerData)
 
-	monsters.clear_monster(&player.playerMonsters[0]);
-	monsters.clear_monster(&player.playerMonsters[1]);
-
-	return player
+	//TODO: clear both monsters
 }
-free :: proc(player: ^Player) {
-	free(player);
+free_data :: proc() {
+	using gamedata
+
+	free(gamedata.playerdata)
 }
