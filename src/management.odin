@@ -4,25 +4,46 @@ package main
 //= Imports
 import "vendor:raylib"
 
+import "combat"
 import "gamedata"
 import "graphics"
-import "player"
+import "monsters"
+
+
+//= Constants
+DEBUG :: true
 
 
 //= Procedures
+
+//* Main program loop
+main_loop :: proc() {
+	using raylib, gamedata
+
+	//* Update
+
+	//* Draw
+	BeginDrawing()
+	ClearBackground(raylib.RAYWHITE)
+
+	graphics.draw_battle_gui()
+
+	DrawFPS(24,80)
+
+	EndDrawing()
+}
+
+//* Initialization
 init :: proc() {
 	using raylib, gamedata
 
 	//* Raylib Logging
 	SetTraceLogLevel(.NONE)
 
-	//* Init gamedata
-	gamedata = new(GameData)
-
 	//* Load Settings / Localization
+	//TODO: Settings / Localization
 
 	//* Init Window and framerate
-	//TODO: Settings
 	InitWindow(
 		1280,
 		720,
@@ -30,22 +51,26 @@ init :: proc() {
 	)
 	SetTargetFPS(80)
 
-	//* Load graphics
+	//* Init data
 	graphics.init()
-	player.init()
+	combat.init()
 
-	//* Debug logging
-//	if DEBUG do 
+	//* DEBUG
+	if DEBUG {
+		combat.generate_player_WOOP()
+		
+		combatdata.active = true
+	}
 }
+
+//* DeInitialization
 free_data :: proc() {
-	using raylib, gamedata
+	using raylib
 
 	//* Close raylib
 	CloseWindow()
 
 	//* Free data
 	graphics.free_data()
-	player.free_data()
-
-	free(gamedata)
+	combat.free_data()
 }

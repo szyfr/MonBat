@@ -3,6 +3,7 @@ package gamedata
 
 //= Imports
 
+
 //= Structures
 Monster :: struct {
 	species   : MonsterNames,

@@ -3,6 +3,11 @@ package gamedata
 
 //= Imports
 
+
+//= Constants
+DEBUG :: true
+
+
 //= Globals
 graphicsdata : ^GraphicsData
-combatdata   : ^CombatData
+playerdata   : ^PlayerData
